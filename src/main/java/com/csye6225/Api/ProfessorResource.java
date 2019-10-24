@@ -21,13 +21,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.csye6225.datamodel.Professor;
-import com.csye6225.Service.ProfessorsService;
+import com.csye6225.Service.ProfessorService;
 
 // .. /webapi/myresource
 @Path("professors")
-public class ProfessorsResource {
+public class ProfessorResource {
 
-    ProfessorsService profService = new ProfessorsService();
+    private ProfessorService profService = new ProfessorService();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ public class ProfessorsResource {
     @GET
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Professor getProfessor(@PathParam("professorId") String profId) {
+    public Professor getProfessor(@PathParam("professorId") Long profId) {
         System.out.println("Professor Resource: Looking for: " + profId);
         return profService.getProfessor(profId);
     }
@@ -59,7 +59,7 @@ public class ProfessorsResource {
     @DELETE
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Professor deleteProfessor(@PathParam("professorId") long profId) {
+    public Professor deleteProfessor(@PathParam("professorId") Long profId) {
         return profService.deleteProfessor(profId);
     }
 
@@ -69,20 +69,22 @@ public class ProfessorsResource {
     public Professor addProfessor(Professor prof) {
         prof.setProfessorId(prof.getFirstName()+prof.getLastName());
         prof.setJoiningDate(new Date().toString());
-        //prof.setId(prof.getProfessorId());
-        return profService.addProfessor(prof);
+        return profService.addProfessor(prof.getFirstName(), prof.getLastName(), prof.getDepartment(), prof.getJoiningDate());
     }
 
     @PUT
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Professor updateProfessor(@PathParam("professorId") long profId,
+    public Professor updateProfessor(@PathParam("professorId") Long profId,
                                      Professor prof) {
         return profService.updateProfessorInformation(profId, prof);
     }
 
+    /*
     public void addProfessor(String firstName, String lastName, String department, Date joiningDate) {
         profService.addProfessor(firstName, lastName, department, joiningDate);
     }
+
+    */
 }

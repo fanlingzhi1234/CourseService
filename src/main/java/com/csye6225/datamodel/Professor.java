@@ -16,7 +16,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 public class Professor {
-    private String id;
+    private Long id;
     private String firstName;
     private String lastName;
     private String department;
@@ -71,10 +71,10 @@ public class Professor {
                 + ", department=" + getDepartment() + ", joiningDate=" + getJoiningDate();
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

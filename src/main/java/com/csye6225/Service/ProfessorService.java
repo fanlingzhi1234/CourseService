@@ -17,11 +17,11 @@ import com.csye6225.datamodel.DynamoDbConnector;
 import com.csye6225.datamodel.InMemoryDatabase;
 import com.csye6225.datamodel.Professor;
 
-public class ProfessorsService {
+public class ProfessorService {
 
-    static HashMap<Long, Professor> prof_Map = InMemoryDatabase.getProfessorDB();
+    private static HashMap<Long, Professor> prof_Map = InMemoryDatabase.getProfessorDB();
 
-    public ProfessorsService() {
+    public ProfessorService() {
     }
 
     // Getting a list of all professor
@@ -29,14 +29,15 @@ public class ProfessorsService {
     public List<Professor> getAllProfessors() {
         //Getting the list
         ArrayList<Professor> list = new ArrayList<>();
-        for (Professor prof : prof_Map.values()) {
-            list.add(prof);
-        }
+        list.addAll(prof_Map.values());
+//        for (Professor prof : prof_Map.values()) {
+//            list.add(prof);
+//        }
         return list ;
     }
 
     // Adding a professor
-    public void addProfessor(String firstName, String lastName, String department, Date joiningDate) {
+    public Professor addProfessor(String firstName, String lastName, String department, String joiningDate) {
         // Next Id
         long nextAvailableId = prof_Map.size() + 1;
 
@@ -45,18 +46,17 @@ public class ProfessorsService {
                 department, joiningDate.toString());
 
         prof_Map.put(nextAvailableId, prof);
+        return prof;
     }
 
 
     // Getting One Professor
-    public Professor getProfessor(String profId) {
+    public Professor getProfessor(Long profId) {
 
         //Simple HashKey Load
-        Professor prof2 = prof_Map.get(profId);
-        System.out.println("Item retrieved:");
-        System.out.println(prof2.toString());
+        Professor prof = prof_Map.get(profId);
 
-        return prof2;
+        return prof;
     }
 
     // Deleting a professor
@@ -67,10 +67,10 @@ public class ProfessorsService {
     }
 
     // Updating Professor Info
-    public Professor updateProfessorInformation(String profId, Professor prof) {
+    public Professor updateProfessorInformation(Long profId, Professor prof) {
         Professor oldProfObject = prof_Map.get(profId);
-        profId = oldProfObject.getProfessorId();
-        prof.setProfessorId(profId);
+        profId = oldProfObject.getId();
+        prof.setId(profId);
         return prof;
     }
 
