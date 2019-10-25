@@ -65,12 +65,6 @@ public class Professor {
         this.joiningDate = joiningDate;
     }
 
-    @Override
-    public String toString() {
-        return "ProfId=" + getProfessorId() + ", firstName=" + getFirstName()
-                + ", department=" + getDepartment() + ", joiningDate=" + getJoiningDate();
-    }
-
     public Long getId() {
         return id;
     }
@@ -83,6 +77,18 @@ public class Professor {
     }
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "Professor{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", department='" + department + '\'' +
+                ", professorId='" + professorId + '\'' +
+                ", joiningDate='" + joiningDate + '\'' +
+                '}';
     }
 }
 

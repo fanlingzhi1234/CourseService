@@ -105,4 +105,18 @@ public class Course {
     public void setTA(Student TA) {
         this.TA = TA;
     }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "courseId=" + courseId +
+                ", name='" + name + '\'' +
+                ", roster=" + roster +
+                ", board=" + board +
+                ", lectures=" + lectures +
+                ", enrolledStudent=" + enrolledStudent +
+                ", professor=" + professor +
+                ", TA=" + TA +
+                '}';
+    }
 }

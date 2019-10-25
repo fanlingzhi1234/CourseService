@@ -26,7 +26,7 @@ public class Program {
         this.name = name;
         this.courses = courses;
         this.professors = professors;
-        
+
     }
 
     public Long getProgramId() {
@@ -59,5 +59,15 @@ public class Program {
 
     public void setProfessors(ArrayList<Professor> professors) {
         this.professors = professors;
+    }
+
+    @Override
+    public String toString() {
+        return "Program{" +
+                "programId=" + programId +
+                ", name='" + name + '\'' +
+                ", courses=" + courses +
+                ", professors=" + professors +
+                '}';
     }
 }

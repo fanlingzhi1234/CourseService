@@ -53,4 +53,14 @@ public class Roster {
     public void setRoom(String room) {
         this.room = room;
     }
+
+    @Override
+    public String toString() {
+        return "Roster{" +
+                "id='" + id + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", room='" + room + '\'' +
+                '}';
+    }
 }
