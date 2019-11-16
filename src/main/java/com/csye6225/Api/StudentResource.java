@@ -1,44 +1,43 @@
 package com.csye6225.Api;
 
-import com.csye6225.Service.StudentService;
-import com.csye6225.datamodel.Student;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Table;
+
 
 /**
  * @author Rexus
  * @date 2019-10-18
  */
 
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import com.csye6225.Service.StudentService;
+import com.csye6225.datamodel.Student;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("students")
 public class StudentResource {
-    private StudentService studentService = new StudentService();
+    StudentService studentService = new StudentService();
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Student> getStudents() {
+    public List<Student> getAllStudents() {
         return studentService.getAllStudents();
     }
 
     @GET
+    @Path("/department/{department}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Student> getStudentsByProgram(
-            @QueryParam("program") String program) {
+            @QueryParam("department") String department) {
 
-        if (program == null) {
+        if (department == null) {
             return studentService.getAllStudents();
         }
-        return studentService.getStudentByProgram(program);
+        return studentService.getStudentByDepartment(department);
 
     }
 
@@ -46,7 +45,7 @@ public class StudentResource {
     @GET
     @Path("/{studentId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Student getStudent(@PathParam("studentId") Long studentId) {
+    public Student getStudent(@PathParam("studentId") String studentId) {
         System.out.println("Student Resource: Looking for: " + studentId);
         return studentService.getStudent(studentId);
     }
@@ -54,7 +53,7 @@ public class StudentResource {
     @DELETE
     @Path("/{studentId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Student deleteStudent(@PathParam("studentId") Long studentId) {
+    public Student deleteStudent(@PathParam("studentId") String studentId) {
         return studentService.deleteStudent(studentId);
     }
 
@@ -63,15 +62,15 @@ public class StudentResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Student addStudent(Student student) {
 
-        return studentService.addStudent(student.getFirstName(), student.getLastName(), student.getImage(), student.getProgram());
+        return studentService.addStudent(student);
     }
 
     @PUT
     @Path("/{studentId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Student updateProfessor(@PathParam("studentId") Long studentId,
+    public Student updateProfessor(@PathParam("studentId") String studentId,
                                      Student student) {
-        return studentService.updateStudentInfo(studentId, student);
+        return studentService.updateStudent(studentId, student);
     }
 }
