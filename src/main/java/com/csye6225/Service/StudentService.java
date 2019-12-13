@@ -4,11 +4,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.SubscribeRequest;
 import com.csye6225.datamodel.DynamoDbConnector;
 import com.csye6225.datamodel.Course;
+import com.csye6225.datamodel.SNSClient;
 import com.csye6225.datamodel.Student;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +23,14 @@ import java.util.List;
 public class StudentService {
 
 
-    static DynamoDbConnector dynamoDb;
-    DynamoDBMapper mapper;
+    private static DynamoDbConnector dynamoDb;
+    private DynamoDBMapper mapper;
+    private AmazonSNS snsClient;
     public StudentService() {
         dynamoDb = new DynamoDbConnector();
         dynamoDb.init();
         mapper = new DynamoDBMapper(dynamoDb.getClient());
+        snsClient = SNSClient.getClient();
     }
 
     // Getting a list of all student
@@ -82,35 +86,31 @@ public class StudentService {
         mapper.save(student);
         return student;
     }
+    //     enroll a course
+    public boolean enrollCourse(String studentId, String courseId){
+
+        Student stu = getStudent(studentId);
+        Course course = mapper.load(Course.class, courseId);
+        if(stu == null || stu.getEnrolledCourses().size() >= 3){
+            return false;
+        }
+        List<String> courselist = stu.getEnrolledCourses();
+        courselist.add(courseId);
+        stu.setEnrolledCourses(courselist);
+        SubscribeRequest subscribeRequest = new SubscribeRequest(course.getNotificationTopic(), "email", stu.getEmail());
+        snsClient.subscribe(subscribeRequest);
+        this.updateStudent(studentId, stu);
+        return true;
+    }
+
 //
-//    // get all course enrolled
-//    public List<Course> getEnrolledCourse(String studentId) {
-//        HashMap<String, AttributeValue> query = new HashMap<>();
-//        query.put(":attribute1", new AttributeValue().withS(studentId));
-//        DynamoDBQueryExpression<Student> queryExpression = new DynamoDBQueryExpression<Student>()
-//                .withIndexName("studentId-index")
-//                .withConsistentRead(false)
-//                .withKeyConditionExpression("studentId = :attribute1")
-//                .withExpressionAttributeValues(query);
-//        List<Course> courseList = mapper.query(Course.class, queryExpression);
-//        return courseList.size() == 0 ? null : courseList;
-//    }
+    // get all course enrolled
+    public List<String> getEnrolledCourse(String studentId) {
+        Student stu = getStudent(studentId);
+        return stu.getEnrolledCourses();
+    }
 //
-//    // enroll a course
-//    public Student enrollCourse(Long stuId, Course course) throws Exception{
-//        Student student = student_Map.get(stuId);
-//        ArrayList<Course> courselist = student.getCoursesEnrolled();
-//        for(int i =0; i< courselist.size(); i++){
-//            if(courselist.get(i).getCourseId().equals(course.getCourseId())){
-//                throw new Exception("already enrolled");
-//            }
-//        }
-//        courselist.add(course);
-//        student.setCoursesEnrolled(courselist);
-//        student_Map.put(stuId, student);
-//        return student;
-//
-//    }
+
 //
 //    // withdraw a course
 //    public Student withdrawCourse(Long stuId, Course course) throws Exception{

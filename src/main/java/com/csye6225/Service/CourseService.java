@@ -4,8 +4,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.CreateTopicRequest;
+import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.csye6225.datamodel.Course;
 import com.csye6225.datamodel.DynamoDbConnector;
+import com.csye6225.datamodel.SNSClient;
 
 
 import java.util.HashMap;
@@ -16,13 +20,15 @@ import java.util.List;
  * @date 2019-10-18
  */
 public class CourseService {
-    static DynamoDbConnector dynamoDb;
-    DynamoDBMapper mapper;
+    private static DynamoDbConnector dynamoDb;
+    private DynamoDBMapper mapper;
+    private AmazonSNS snsClient;
 
     public CourseService() {
         dynamoDb = new DynamoDbConnector();
         dynamoDb.init();
         mapper = new DynamoDBMapper(dynamoDb.getClient());
+        snsClient = SNSClient.getClient();
     }
 
 
@@ -54,6 +60,9 @@ public class CourseService {
     // Adding a Course
     public Course addCourse(Course course) {
         if (course == null) {return null;}
+        CreateTopicRequest createTopicRequest = new CreateTopicRequest(course.getCourseId() + "Topic");
+        CreateTopicResult result = snsClient.createTopic(createTopicRequest);
+        course.setNotificationTopic(result.getTopicArn());
         mapper.save(course);
         return course;
     }
@@ -84,38 +93,27 @@ public class CourseService {
 
     // change Roaster
 
-    // add enrolled student
-//    public Course addStudent(Long courseId, Student student){
-//        Course course = course_Map.get(courseId);
-//        ArrayList<Student> studentlist = course.getEnrolledStudent();
-//        for(int i =0; i< studentlist.size(); i++){
-//            if(studentlist.get(i).getStudentId().equals(student.getStudentId())){
-//                throw new Exception("already enrolled");
-//            }
-//        }
-//        studentlist.add(student);
-//        course.setEnrolledStudent(studentlist);
-//        course_Map.put(courseId, course);
-//        return course;
-//    }
-//
-//    // remove student
-//    public Course withdrawStudent(Long courseId, Student student){
-//
-//        Course course = course_Map.get(courseId);
-//        ArrayList<Student> studentlist = course.getEnrolledStudent();
-////        for(int i =0; i< studentlist.size(); i++){
-////            if(studentlist.get(i).getStudentId().equals(student.getStudentId())){
-//                studentlist.remove(student);
-////            }
-////            else{
-////                throw new Exception("you dont enroll this course;");
-////            }
-////        }
-//        course.setEnrolledStudent(studentlist);
-//        course_Map.put(courseId, course);
-//        return course;
-//    }
+    public Course addStudent(String courseId, String studentId){
+        Course course = getCourse(courseId);
+        List<String> roster = course.getRoster();
+        roster.add(studentId);
+        this.updateCourse(courseId, course);
+        return course;
+    }
+
+    // remove student
+    public Course deleteStudent(String courseId, String studentId){
+
+        Course course = getCourse(courseId);
+        List<String> roster = course.getRoster();
+        if(!roster.contains(studentId)){
+            System.out.println("this student didn't register this course;");
+            return course;
+        }
+        roster.remove(studentId);
+        this.updateCourse(courseId, course);
+        return course;
+    }
 
 
 

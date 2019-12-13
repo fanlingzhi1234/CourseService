@@ -1,19 +1,14 @@
 package com.csye6225.Api;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-
-
 /**
  * @author Rexus
  * @date 2019-10-18
  */
 
+import com.csye6225.Service.CourseService;
 import com.csye6225.Service.StudentService;
 import com.csye6225.datamodel.Student;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -21,6 +16,7 @@ import java.util.List;
 @Path("students")
 public class StudentResource {
     StudentService studentService = new StudentService();
+    CourseService courseService = new CourseService();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,4 +69,13 @@ public class StudentResource {
                                      Student student) {
         return studentService.updateStudent(studentId, student);
     }
+    @POST
+    @Path("/{studentId}/register")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public boolean enrollCourse(@PathParam("studentId") String studentId, @FormParam("courseId") String courseId) {
+        return studentService.enrollCourse(studentId, courseId);
+    }
+
+
 }

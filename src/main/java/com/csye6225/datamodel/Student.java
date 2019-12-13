@@ -15,18 +15,21 @@ public class Student {
     private String lastName;
     private String joiningDate;
     private List<String> enrolledCourses;
+    private String email;
     private String department;
     public Student(){
 
     }
-    public Student(String id, String studentId, String firstName, String lastName, String joiningDate, String department, List<String> enrolledCourses) {
+
+    public Student(String id, String studentId, String firstName, String lastName, String joiningDate, List<String> enrolledCourses, String email, String department) {
         Id = id;
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.joiningDate = joiningDate;
-        this.department = department;
         this.enrolledCourses = enrolledCourses;
+        this.email = email;
+        this.department = department;
     }
 
     @DynamoDBHashKey(attributeName = "Id")
@@ -91,5 +94,13 @@ public class Student {
 
     public void setEnrolledCourses(List<String> enrolledCourses) {
         this.enrolledCourses = enrolledCourses;
+    }
+    @DynamoDBAttribute(attributeName = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

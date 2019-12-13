@@ -24,10 +24,12 @@ public class DynamoDbConnector {
                     .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
                     .withRegion("us-west-2")
                     .build();
+            System.out.println("I created the client");
         }
     }
 
     public AmazonDynamoDB getClient() {
+        init();
         return dynamoDB;
     }
 }
