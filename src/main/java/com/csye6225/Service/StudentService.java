@@ -5,6 +5,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.amazonaws.services.sns.model.SubscribeRequest;
 import com.csye6225.datamodel.DynamoDbConnector;
 import com.csye6225.datamodel.Course;
@@ -99,6 +101,7 @@ public class StudentService {
         stu.setEnrolledCourses(courselist);
         SubscribeRequest subscribeRequest = new SubscribeRequest(course.getNotificationTopic(), "email", stu.getEmail());
         snsClient.subscribe(subscribeRequest);
+        snsClient.publish("arn:aws:sns:us-west-2:434236839991:"+courseId+"Topic", "Enrolled Course "+courseId+" successfully!");
         this.updateStudent(studentId, stu);
         return true;
     }
